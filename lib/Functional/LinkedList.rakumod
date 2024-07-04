@@ -14,13 +14,13 @@ method ^parameterize(Mu:U \linked-list, ::T = Any) {
 }
 
 method mutate(&block) is export {
-  my $*VALUE = $(self);
-  block $($*VALUE);
+  my $*VALUE = self;
+  block $*VALUE;
   $*VALUE
 }
 
 method iterator {
-  class :: {
+  class :: does Iterator {
     has $.list is required;
     method pull-one {
       return IterationEnd without $!list;
@@ -40,6 +40,9 @@ has Bool     $.both = $both-default;
 
 method of {Any}
 
+multi method elems(::?CLASS:D:) { $!size }
+multi method elems(::?CLASS:U:) { 0 }
+
 multi method new(*@values, Bool :$both = $both-default, *% where *.not) {
   die X::TypeCheck.new: :operation("creating { $.^name }"), :expected($of), :got(@values) if @values && @values.are !~~ $of;
   my $obj = self.bless: :$both, :value(@values.tail // $of);
@@ -57,7 +60,7 @@ multi method AT-POS(::?CLASS:D: UInt $index) {
   $!next.AT-POS: $index - 1
 }
 
-method !mutable($node, $value, Bool :$both = $!both, :$internal = True) {
+method !mutable($node, $value, Bool :$both = self.defined ?? $!both !! $both-default, :$internal = False) {
   return $node, $value if $internal;
   do if $*VALUE !~~ Failure {
     $*VALUE = $($node);
@@ -110,7 +113,7 @@ method !replace($_) {
 }
 
 method unshift($value where $of) {
-  $.new: :$value, :next(self), |(:$!both with self)
+  self!mutable: $.new(:$value, :next(self), |(:$!both with self)), $value
 }
 
 method shift {
@@ -127,6 +130,11 @@ method pop {
 
 multi method gist(::?CLASS:U:) { "({ self.^shortname }{ "[{ $of.^name }]" })" }
 multi method gist(::?CLASS:D:) { "$!value -> { quietly $!next.gist }" }
+
+method WHICH { ValueObjAt.new: join "|", self.^shortname, |($!value.WHICH, $!next.WHERE with self) }
+
+multi method Seq(::?CLASS:D:) { Seq.new: $.iterator }
+multi method list(::?CLASS:D:) { $.Seq.list }
 
 =begin pod
 

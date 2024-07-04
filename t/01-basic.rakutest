@@ -1,6 +1,96 @@
 use Test;
 use Functional::LinkedList;
 
-pass "replace me";
+my $f1 = Functional::LinkedList.new: 0;
+is $f1[0], 0;
+is $f1.elems, 1;
+
+my ($f2, $value2) = $f1[0] = 1;
+
+is $value2, 1;
+is $f1[0], 0;
+is $f1.elems, 1;
+is $f2[0], 1;
+is $f2.elems, 1;
+
+my ($f3, $value3) = $f1[1] = 2;
+
+is $f1[0], 0;
+is $f1.elems, 1;
+is $f2[0], 1;
+is $f2.elems, 1;
+is $f3[0], 0;
+is $f3[1], 2;
+is $f3.elems, 2;
+
+is-deeply $f1.Array, [ 0, ];
+is-deeply $f2.Array, [ 1, ];
+is-deeply $f3.Array, [ 0, 2 ];
+
+my ($f4, $value4) = $f1.unshift: -1;
+
+is $value4, -1;
+
+is-deeply $f1.Array, [ 0, ];
+is-deeply $f2.Array, [ 1, ];
+is-deeply $f3.Array, [ 0, 2 ];
+is-deeply $f4.Array, [ -1, 0 ];
+
+my ($f5, $value5) = $f4.shift;
+
+is $value5, -1;
+
+is-deeply $f1.Array, [ 0, ];
+is-deeply $f2.Array, [ 1, ];
+is-deeply $f3.Array, [ 0, 2 ];
+is-deeply $f4.Array, [ -1, 0 ];
+is-deeply $f5.Array, [ 0, ];
+
+my ($f6, $value6) = $f1.push: 1;
+
+is $value6, 1;
+
+is-deeply $f1.Array, [ 0, ];
+is-deeply $f2.Array, [ 1, ];
+is-deeply $f3.Array, [ 0, 2 ];
+is-deeply $f4.Array, [ -1, 0 ];
+is-deeply $f5.Array, [ 0, ];
+is-deeply $f6.Array, [ 0, 1 ];
+
+my ($f7, $value7) = $f6.pop;
+
+is $value7, 1;
+
+is-deeply $f1.Array, [ 0, ];
+is-deeply $f2.Array, [ 1, ];
+is-deeply $f3.Array, [ 0, 2 ];
+is-deeply $f4.Array, [ -1, 0 ];
+is-deeply $f5.Array, [ 0, ];
+is-deeply $f6.Array, [ 0, 1 ];
+is-deeply $f7.Array, [ 0, ];
+
+my $f8 = $f1.mutate: {
+  is .Array, [ 0, ];
+  is .unshift(-1), -1;
+  is .Array, [ -1, 0 ];
+  is .shift, -1;
+  is .Array, [ 0, ];
+  is .push(1), 1;
+  is .Array, [ 0, 1 ];
+  is .pop, 1;
+  is .Array, [ 0, ];
+  .shift;
+
+  for ^10 -> $value { .unshift: $value }
+}
+
+is-deeply $f1.Array, [ 0, ];
+is-deeply $f2.Array, [ 1, ];
+is-deeply $f3.Array, [ 0, 2 ];
+is-deeply $f4.Array, [ -1, 0 ];
+is-deeply $f5.Array, [ 0, ];
+is-deeply $f6.Array, [ 0, 1 ];
+is-deeply $f7.Array, [ 0, ];
+is-deeply $f8.Array, [ 9, 8, 7, 6, 5, 4, 3, 2, 1, 0 ];
 
 done-testing;
