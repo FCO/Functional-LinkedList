@@ -1,0 +1,6 @@
+use Test;
+use Functional::LinkedList;
+
+pass "replace me";
+
+done-testing;
