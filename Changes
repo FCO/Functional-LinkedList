@@ -1,6 +1,8 @@
 Revision history for Functional-LinkedList
 
 {{$NEXT}}
+
+0.0.2  2024-07-04T21:23:54+01:00
     - remove windows test
 
 0.0.1  2024-07-04T21:19:16+01:00
