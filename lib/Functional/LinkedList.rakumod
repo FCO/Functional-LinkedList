@@ -117,7 +117,7 @@ method unshift($value where $of) {
 }
 
 method shift {
-  self!mutable: $!next, $!value
+  self!mutable: self ?? $!next !! self, self ?? $!value !! $of
 }
 
 method push($value where $of) {

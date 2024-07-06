@@ -1,6 +1,7 @@
 Revision history for Functional-LinkedList
 
 {{$NEXT}}
+    - Fix shift on undefined linked list
 
 0.0.2  2024-07-04T21:23:54+01:00
     - remove windows test
