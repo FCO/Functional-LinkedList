@@ -1,6 +1,8 @@
 Revision history for Functional-LinkedList
 
 {{$NEXT}}
+
+0.0.3  2024-07-06T03:46:24+01:00
     - Fix shift on undefined linked list
 
 0.0.2  2024-07-04T21:23:54+01:00
