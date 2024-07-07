@@ -47,7 +47,7 @@ multi method new(*@values, Bool :$both = $both-default, *% where *.not) {
   die X::TypeCheck.new: :operation("creating { $.^name }"), :expected($of), :got(@values) if @values && @values.are !~~ $of;
   my $obj = self.bless: :$both, :value(@values.tail // $of);
   for @values.reverse.skip -> $item {
-    $obj := $obj.unshift: $item // $of
+    ($obj, $) = $obj.unshift: $item // $of
   }
   $obj
 }
@@ -126,6 +126,42 @@ method push($value where $of) {
 
 method pop {
   self[$!size - 1]:delete
+}
+
+multi method splice(Int $start, Inf, @data) {
+  my :($next, \value) := $!next.splice: $start - 1, @data;
+  self!mutable: $.new(:$!both, :$next, :$!value), value
+}
+
+multi method splice(Int $start, @data) {
+  my :($next, \value) := $!next.splice: $start - 1, @data;
+  self!mutable: $.new(:$!both, :$next, :$!value), value
+}
+
+multi method splice(::?CLASS:D: UInt $start where * > 0, $remove, @data) {
+  my ($next, \value) = $!next.splice: :both, $start - 1, $remove, @data;
+  self!mutable: $.bless(:$!value, :$next), value
+}
+
+multi method splice(0, Int $remove where * <= $.elems, @data) {
+  my $next = self;
+  my @removed;
+  for ^$remove {
+    @removed.push: $next.value;
+    $next .= next
+  }
+  for @data.reverse -> $value {
+    $next = $.bless: :$next, :$value
+  }
+  self!mutable: $next, $.WHAT.new: @removed
+} 
+
+multi method splice(0, Inf, @data) {
+  self.splice: 0, @data
+}
+
+multi method splice(0, @data) {
+  self.splice: 0, $.elems, @data
 }
 
 multi method gist(::?CLASS:U:) { "({ self.^shortname }{ "[{ $of.^name }]" })" }
