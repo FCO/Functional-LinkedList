@@ -1,6 +1,8 @@
 Revision history for Functional-LinkedList
 
 {{$NEXT}}
+
+0.0.4  2024-07-07T01:16:40+01:00
     - split()
 
 0.0.3  2024-07-06T03:46:24+01:00
